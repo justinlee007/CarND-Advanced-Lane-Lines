@@ -6,6 +6,8 @@ import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 
+IMAGE_SHAPE_X = 1200
+IMAGE_SHAPE_Y = 720
 NUM_X_CORNERS = 9
 NUM_Y_CORNERS = 6
 
@@ -45,18 +47,43 @@ def calibrate_camera(visualize=False, save_examples=False):
         else:
             print("Could not find chessboard corners for {}".format(fname))
 
-    cv2.destroyAllWindows()
+    if visualize:
+        cv2.destroyAllWindows()
 
-    # Test undistortion on an image
-    img = cv2.imread('./camera_cal/calibration2.jpg')
-    img_size = (img.shape[1], img.shape[0])
+    img_size = (IMAGE_SHAPE_X, IMAGE_SHAPE_Y)
 
     # Do camera calibration given object points and image points
     ret, mtx, dist, rvecs, tvecs = cv2.calibrateCamera(objpoints, imgpoints, img_size, None, None)
 
-    dst = cv2.undistort(img, mtx, dist, None, mtx)
+    return mtx, dist
 
-    # dst = cv2.cvtColor(dst, cv2.COLOR_BGR2RGB)
+
+def undistort_image(image, dict):
+    mtx = dict["mtx"]
+    dist = dict["dist"]
+    image = cv2.undistort(image, mtx, dist, None, mtx)
+    return image
+
+
+def save_calibration_data(mtx, dist):
+    # Save the camera calibration result for later use (we won't worry about rvecs / tvecs)
+    dist_pickle = {}
+    dist_pickle["mtx"] = mtx
+    dist_pickle["dist"] = dist
+    pickle.dump(dist_pickle, open("./calibration.p", "wb"))
+
+
+def load_calibration_data():
+    dict = pickle.load(open("./calibration.p", mode="rb"))
+    # print("dict={}".format(dict))
+    return dict
+
+
+def show_undistort(image_file, visualize=False, save_examples=False):
+    # Test undistortion on an image
+    img = cv2.imread(image_file)
+    dict = load_calibration_data()
+    dst = undistort_image(img, dict)
 
     # Visualize undistortion
     f, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 7))
@@ -68,15 +95,6 @@ def calibrate_camera(visualize=False, save_examples=False):
         plt.show(block=True)
     if save_examples:
         f.savefig("./output_images/example_undist.png", bbox_inches="tight")
-    return mtx, dist
-
-
-def save_calibration_data(mtx, dist):
-    # Save the camera calibration result for later use (we won't worry about rvecs / tvecs)
-    dist_pickle = {}
-    dist_pickle["mtx"] = mtx
-    dist_pickle["dist"] = dist
-    pickle.dump(dist_pickle, open("./calibration.p", "wb"))
 
 
 if __name__ == '__main__':
@@ -88,3 +106,4 @@ if __name__ == '__main__':
     save_examples = bool(results.save)
     mtx, dist = calibrate_camera(visualize, save_examples)
     save_calibration_data(mtx, dist)
+    show_undistort("./camera_cal/calibration2.jpg", visualize, save_examples)
