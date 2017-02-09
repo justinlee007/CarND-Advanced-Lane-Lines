@@ -9,6 +9,11 @@ import camera_calibration
 
 
 def apply_transform(img):
+    """
+    Calculates perspective transform matrix and warps the image
+    :param img:
+    :return:
+    """
     img_shape = (img.shape[1], img.shape[0])
     src, dst = create_warp_mappings(img)
     # Given src and dst points, calculate the perspective transform matrix
@@ -21,6 +26,11 @@ def apply_transform(img):
 
 
 def create_warp_mappings(image):
+    """
+    Creates source and destination coordinates for transforms operation
+    :param image:
+    :return:
+    """
     shape = image.shape
     top_vertical_offset = 90
     bottom_vertical_offset = 50
@@ -36,7 +46,7 @@ def create_warp_mappings(image):
     return src, dst
 
 
-def show_warp(image_file, visualize=False, save_examples=False):
+def show_warp(image_file, visualize=False, save_example=False):
     # Read in an image
     img = cv2.imread(image_file)
     img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
@@ -58,7 +68,7 @@ def show_warp(image_file, visualize=False, save_examples=False):
     ax2.set_title("Warped Image", fontsize=24)
     if (visualize):
         plt.show(block=True)
-    if (save_examples):
+    if (save_example):
         save_file_name = "warped_{}".format(os.path.basename(image_file.replace(".jpg", ".png")))
         save_location = "./output_images/{}".format(save_file_name)
         f.savefig(save_location, bbox_inches="tight")
@@ -66,8 +76,8 @@ def show_warp(image_file, visualize=False, save_examples=False):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Perspective transform for Udacity Advanced Lane Finding project")
-    parser.add_argument("-show", action="store_true", help="Visualize data calibration")
-    parser.add_argument("-save", action="store_true", help="Save calibration images")
+    parser.add_argument("-show", action="store_true", help="Visualize transform")
+    parser.add_argument("-save", action="store_true", help="Save transform image")
     results = parser.parse_args()
     visualize = bool(results.show)
     save_examples = bool(results.save)

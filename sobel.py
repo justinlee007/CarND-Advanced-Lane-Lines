@@ -1,3 +1,6 @@
+import argparse
+import os
+
 import cv2
 import matplotlib.image as mpimg
 import matplotlib.pyplot as plt
@@ -31,19 +34,32 @@ def abs_sobel_thresh(img, orient='x', thresh_min=0, thresh_max=255):
     return binary_output
 
 
-if __name__ == '__main__':
+def show_sobel(image_file, visualize=False, save_example=False):
     # Read in an image and grayscale it
-    image = mpimg.imread('./test_images/signs_vehicles_xygrad.png')
+    image = mpimg.imread(image_file)
 
     # Run the function
     grad_binary = abs_sobel_thresh(image, orient='x', thresh_min=20, thresh_max=100)
 
     # Plot the result
-    f, (ax1, ax2) = plt.subplots(1, 2, figsize=(24, 9))
-    f.tight_layout()
+    f, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 7))
     ax1.imshow(image)
-    ax1.set_title('Original Image', fontsize=50)
-    ax2.imshow(grad_binary, cmap='gray')
-    ax2.set_title('Thresholded Gradient', fontsize=50)
-    plt.subplots_adjust(left=0., right=1, top=0.9, bottom=0.)
-    plt.show(block=True)
+    ax1.set_title("Original Image", fontsize=24)
+    ax2.imshow(grad_binary, cmap="gray")
+    ax2.set_title("Thresholded Gradient", fontsize=24)
+    if (visualize):
+        plt.show(block=True)
+    if (save_example):
+        save_file_name = "sobel_{}".format(os.path.basename(image_file.replace(".jpg", ".png")))
+        save_location = "./output_images/{}".format(save_file_name)
+        f.savefig(save_location, bbox_inches="tight")
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description="Sobel threshold for Udacity Advanced Lane Finding project")
+    parser.add_argument("-show", action="store_true", help="Visualize threshold")
+    parser.add_argument("-save", action="store_true", help="Save threshold image")
+    results = parser.parse_args()
+    visualize = bool(results.show)
+    save_examples = bool(results.save)
+    show_sobel("./test_images/test3.jpg", visualize, save_examples)
