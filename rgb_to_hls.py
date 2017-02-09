@@ -27,7 +27,7 @@ def hls_select(img, thresh=(0, 255)):
 def show_hls(image_file, visualize=False, save_example=False):
     # Read in an image, you can also try test1.jpg or test4.jpg
     image = mpimg.imread(image_file)
-    hls_binary = hls_select(image, thresh=(25, 80))
+    hls_binary = hls_select(image, thresh=(170, 250))
 
     # Plot the result
     f, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 7))
@@ -50,4 +50,4 @@ if __name__ == '__main__':
     results = parser.parse_args()
     visualize = bool(results.show)
     save_examples = bool(results.save)
-    show_hls("./test_images/straight_lines2.jpg", visualize, save_examples)
+    show_hls("./test_images/test4.jpg", visualize, save_examples)
