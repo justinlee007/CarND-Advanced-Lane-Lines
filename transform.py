@@ -13,9 +13,11 @@ def apply_transform(img):
     src, dst = create_warp_mappings(img)
     # Given src and dst points, calculate the perspective transform matrix
     M = cv2.getPerspectiveTransform(src, dst)
+    # Calculate the inverse perspective transform
+    Minv = cv2.getPerspectiveTransform(dst, src)
     # Warp the image using OpenCV warpPerspective()
     warped = cv2.warpPerspective(img, M, img_shape, flags=cv2.INTER_AREA)
-    return warped, M
+    return warped, M, Minv
 
 
 def create_warp_mappings(image):
@@ -37,10 +39,13 @@ def show_warp(image_file, visualize=False, save_examples=False):
     # Read in an image
     img = cv2.imread(image_file)
     img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    # Undistort
     dict = camera_calibration.load_calibration_data()
     img = camera_calibration.undistort_image(img, dict)
+    # Get mappings to plot on image
     src, dst = create_warp_mappings(img)
-    warped, M = apply_transform(img)
+    # Warp image
+    warped, M, Minv = apply_transform(img)
     f, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 7))
     ax1.imshow(img)
     for p in src:

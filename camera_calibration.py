@@ -47,7 +47,7 @@ def calibrate_camera(visualize=False, save_examples=False):
                 cv2.imshow("Chessboard Image", img)
                 cv2.waitKey(0)
         else:
-            print("Could not find chessboard corners for {}".format(fname))
+            print("Could not find chessboard corners for {}".format(os.path.basename(fname)))
 
     if visualize:
         cv2.destroyAllWindows()
