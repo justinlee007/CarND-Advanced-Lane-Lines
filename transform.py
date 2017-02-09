@@ -14,7 +14,7 @@ def apply_transform(img):
     # Given src and dst points, calculate the perspective transform matrix
     M = cv2.getPerspectiveTransform(src, dst)
     # Warp the image using OpenCV warpPerspective()
-    warped = cv2.warpPerspective(img, M, img_shape)
+    warped = cv2.warpPerspective(img, M, img_shape, flags=cv2.INTER_AREA)
     return warped, M
 
 
