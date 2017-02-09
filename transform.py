@@ -22,14 +22,15 @@ def apply_transform(img):
 
 def create_warp_mappings(image):
     shape = image.shape
-    vertical_offset = 90
-    horizontal_offset = 40
+    top_vertical_offset = 90
+    bottom_vertical_offset = 50
+    horizontal_offset = 120
     mid_vertical = shape[0] / 2
     mid_horizontal = shape[1] / 2
-    bottom_left = [horizontal_offset, (shape[0] - horizontal_offset)]
-    middle_left = [(mid_horizontal - (horizontal_offset * 3)), (mid_vertical + vertical_offset)]
-    middle_right = [(mid_horizontal + (horizontal_offset * 3)), (mid_vertical + vertical_offset)]
-    bottom_right = [(shape[1] - horizontal_offset), (shape[0] - horizontal_offset)]
+    bottom_left = [horizontal_offset, (shape[0] - bottom_vertical_offset)]
+    middle_left = [(mid_horizontal - horizontal_offset), (mid_vertical + top_vertical_offset)]
+    middle_right = [(mid_horizontal + horizontal_offset), (mid_vertical + top_vertical_offset)]
+    bottom_right = [(shape[1] - horizontal_offset), (shape[0] - bottom_vertical_offset)]
     src = np.float32([middle_right, bottom_right, bottom_left, middle_left])
     dst = np.float32([[shape[1], 0], [shape[1], shape[0]], [0, shape[0]], [0, 0]])
     return src, dst
@@ -64,7 +65,7 @@ def show_warp(image_file, visualize=False, save_examples=False):
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description="Camera calibration for Udacity Advanced Lane Finding project")
+    parser = argparse.ArgumentParser(description="Perspective transform for Udacity Advanced Lane Finding project")
     parser.add_argument("-show", action="store_true", help="Visualize data calibration")
     parser.add_argument("-save", action="store_true", help="Save calibration images")
     results = parser.parse_args()
