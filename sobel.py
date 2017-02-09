@@ -47,9 +47,9 @@ def show_sobel(image_file, visualize=False, save_example=False):
     ax1.set_title("Original Image", fontsize=24)
     ax2.imshow(grad_binary, cmap="gray")
     ax2.set_title("Thresholded Gradient", fontsize=24)
-    if (visualize):
+    if visualize:
         plt.show(block=True)
-    if (save_example):
+    if save_example:
         save_file_name = "sobel_{}".format(os.path.basename(image_file.replace(".jpg", ".png")))
         save_location = "./output_images/{}".format(save_file_name)
         f.savefig(save_location, bbox_inches="tight")

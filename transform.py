@@ -66,9 +66,9 @@ def show_warp(image_file, visualize=False, save_example=False):
     for p in dst:
         ax2.plot(p[0], p[1], "ro")
     ax2.set_title("Warped Image", fontsize=24)
-    if (visualize):
+    if visualize:
         plt.show(block=True)
-    if (save_example):
+    if save_example:
         save_file_name = "warped_{}".format(os.path.basename(image_file.replace(".jpg", ".png")))
         save_location = "./output_images/{}".format(save_file_name)
         f.savefig(save_location, bbox_inches="tight")
