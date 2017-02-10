@@ -32,9 +32,9 @@ def create_warp_mappings(image):
     :return:
     """
     shape = image.shape
-    top_vertical_offset = 90
+    top_vertical_offset = 100
     bottom_vertical_offset = 50
-    horizontal_offset = 120
+    horizontal_offset = 110
     mid_vertical = shape[0] / 2
     mid_horizontal = shape[1] / 2
     bottom_left = [horizontal_offset, (shape[0] - bottom_vertical_offset)]
@@ -81,4 +81,9 @@ if __name__ == '__main__':
     results = parser.parse_args()
     visualize = bool(results.show)
     save_examples = bool(results.save)
+    show_warp("./test_images/test1.jpg", visualize, save_examples)
     show_warp("./test_images/test2.jpg", visualize, save_examples)
+    show_warp("./test_images/test3.jpg", visualize, save_examples)
+    show_warp("./test_images/test4.jpg", visualize, save_examples)
+    show_warp("./test_images/test5.jpg", visualize, save_examples)
+    show_warp("./test_images/test6.jpg", visualize, save_examples)
