@@ -33,7 +33,7 @@ def create_warp_mappings(image):
     """
     shape = image.shape
     top_vertical_offset = 100
-    bottom_vertical_offset = 50
+    bottom_vertical_offset = 30
     horizontal_offset = 110
     mid_vertical = shape[0] / 2
     mid_horizontal = shape[1] / 2

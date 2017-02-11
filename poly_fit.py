@@ -1,17 +1,23 @@
 import argparse
+import os
 
 import cv2
+import matplotlib
+
+matplotlib.use('TkAgg')
 import matplotlib.image as mpimg
 import matplotlib.pyplot as plt
 import numpy as np
 
-import pipeline
+import camera_calibration
+import imaging
+import transform
 
 
 def poly_fit(binary_warped):
     # Assuming you have created a warped binary image called "binary_warped"
     # Take a histogram of the bottom half of the image
-    histogram = np.sum(binary_warped[binary_warped.shape[0] * 0.75:, :], axis=0)
+    histogram = np.sum(binary_warped[int(binary_warped.shape[0] * 0.65):, :], axis=0)
     # Create an output image to draw on and  visualize the result
     out_img = np.dstack((binary_warped, binary_warped, binary_warped)) * 255
     # Find the peak of the left and right halves of the histogram
@@ -39,6 +45,7 @@ def poly_fit(binary_warped):
     left_lane_inds = []
     right_lane_inds = []
 
+    # print("\nmidpoint={}, margin={}, minpix={}".format(midpoint, nwindows, window_height, margin, minpix))
     # Step through the windows one by one
     for window in range(nwindows):
         # Identify window boundaries in x and y (and right and left)
@@ -48,6 +55,9 @@ def poly_fit(binary_warped):
         win_xleft_high = leftx_current + margin
         win_xright_low = rightx_current - margin
         win_xright_high = rightx_current + margin
+        # print(
+        #     "\nwin_y_low={}, win_y_high={}, win_xleft_low={}, win_xleft_high={}, win_xright_low={}, win_xright_high={}".
+        #         format(win_y_low, win_y_high, win_xleft_low, win_xleft_high, win_xright_low, win_xright_high))
         # Draw the windows on the visualization image
         cv2.rectangle(out_img, (win_xleft_low, win_y_low), (win_xleft_high, win_y_high), (0, 255, 0), 2)
         cv2.rectangle(out_img, (win_xright_low, win_y_low), (win_xright_high, win_y_high), (0, 255, 0), 2)
@@ -64,6 +74,8 @@ def poly_fit(binary_warped):
             leftx_current = np.int(np.mean(nonzerox[good_left_inds]))
         if len(good_right_inds) > minpix:
             rightx_current = np.int(np.mean(nonzerox[good_right_inds]))
+            # print("len(good_left_inds)={}, len(good_right_inds)={}".format(len(good_left_inds), len(good_right_inds)))
+            # print("leftx_current={}, rightx_current={}".format(leftx_current, rightx_current))
 
     # Concatenate the arrays of indices
     left_lane_inds = np.concatenate(left_lane_inds)
@@ -87,17 +99,18 @@ def poly_fit(binary_warped):
     out_img[nonzeroy[left_lane_inds], nonzerox[left_lane_inds]] = [255, 0, 0]
     out_img[nonzeroy[right_lane_inds], nonzerox[right_lane_inds]] = [0, 0, 255]
     plt.imshow(out_img)
-    plt.plot(left_fitx, ploty, color='yellow')
-    plt.plot(right_fitx, ploty, color='yellow')
-    plt.xlim(0, 1280)
-    plt.ylim(720, 0)
+    plt.plot(left_fitx, ploty, color='red')
+    plt.plot(right_fitx, ploty, color='blue')
+    # plt.xlim(0, 1280)
+    # plt.ylim(720, 0)
 
     # Assume you now have a new warped binary image from the next frame of video (also called "binary_warped")
     # It's now much easier to find line pixels!
     nonzero = binary_warped.nonzero()
     nonzeroy = np.array(nonzero[0])
     nonzerox = np.array(nonzero[1])
-    margin = 100
+    # margin = 100
+    margin = 25
     left_lane_inds = ((nonzerox > (left_fit[0] * (nonzeroy ** 2) + left_fit[1] * nonzeroy + left_fit[2] - margin)) &
                       (nonzerox < (left_fit[0] * (nonzeroy ** 2) + left_fit[1] * nonzeroy + left_fit[2] + margin)))
     right_lane_inds = ((nonzerox > (right_fit[0] * (nonzeroy ** 2) + right_fit[1] * nonzeroy + right_fit[2] - margin)) &
@@ -116,12 +129,13 @@ def poly_fit(binary_warped):
     left_fitx = left_fit[0] * ploty ** 2 + left_fit[1] * ploty + left_fit[2]
     right_fitx = right_fit[0] * ploty ** 2 + right_fit[1] * ploty + right_fit[2]
 
+    return out_img
     # Create an image to draw on and an image to show the selection window
     out_img = np.dstack((binary_warped, binary_warped, binary_warped)) * 255
     window_img = np.zeros_like(out_img)
     # Color in left and right line pixels
-    out_img[nonzeroy[left_lane_inds], nonzerox[left_lane_inds]] = [255, 0, 0]
-    out_img[nonzeroy[right_lane_inds], nonzerox[right_lane_inds]] = [0, 0, 255]
+    # out_img[nonzeroy[left_lane_inds], nonzerox[left_lane_inds]] = [255, 0, 0]
+    # out_img[nonzeroy[right_lane_inds], nonzerox[right_lane_inds]] = [0, 0, 255]
 
     # Generate a polygon to illustrate the search window area
     # And recast the x and y points into usable format for cv2.fillPoly()
@@ -133,36 +147,90 @@ def poly_fit(binary_warped):
     right_line_pts = np.hstack((right_line_window1, right_line_window2))
 
     # Draw the lane onto the warped blank image
-    cv2.fillPoly(window_img, np.int_([left_line_pts]), (0, 255, 0))
-    cv2.fillPoly(window_img, np.int_([right_line_pts]), (0, 255, 0))
-    result = cv2.addWeighted(out_img, 1, window_img, 0.3, 0)
-    plt.imshow(result)
-    plt.plot(left_fitx, ploty, color='yellow')
-    plt.plot(right_fitx, ploty, color='yellow')
-    plt.xlim(0, 1280)
-    plt.ylim(720, 0)
+    # cv2.fillPoly(window_img, np.int_([left_line_pts]), (0, 255, 0))
+    # cv2.fillPoly(window_img, np.int_([right_line_pts]), (0, 255, 0))
+    # cv2.fillPoly(window_img, np.int_([left_line_pts]), (255, 0, 0))
+    # cv2.fillPoly(window_img, np.int_([right_line_pts]), (0, 0, 255))
+    # result = cv2.addWeighted(out_img, 1, window_img, 0.3, 0)
+    result = cv2.addWeighted(out_img, 1, window_img, 0.5, 0)
+    # plt.imshow(result)
+    # plt.plot(left_fitx, ploty, color='red')
+    # plt.plot(right_fitx, ploty, color='blue')
+    # plt.xlim(0, 1280)
+    # plt.ylim(720, 0)
 
-    plt.show(block=True)
+    # plt.show(block=True)
+    return result
+
+def histogram(binary_warped):
+    # Assuming you have created a warped binary image called "binary_warped"
+    # Take a histogram of the bottom half of the image
+    histogram = np.sum(binary_warped[int(binary_warped.shape[0] * 0.65):, :], axis=0)
+    # Create an output image to draw on and  visualize the result
+    out_img = np.dstack((binary_warped, binary_warped, binary_warped)) * 255
+    # Find the peak of the left and right halves of the histogram
+    # These will be the starting point for the left and right lines
+    midpoint = np.int(histogram.shape[0] / 2)
+    leftx_base = np.argmax(histogram[:midpoint])
+    rightx_base = np.argmax(histogram[midpoint:]) + midpoint
+
+    # Choose the number of sliding windows
+    nwindows = 9
+    # Set height of windows
+    window_height = np.int(binary_warped.shape[0] / nwindows)
+    # Identify the x and y positions of all nonzero pixels in the image
+    nonzero = binary_warped.nonzero()
+    nonzeroy = np.array(nonzero[0])
+    nonzerox = np.array(nonzero[1])
+    # Current positions to be updated for each window
+    leftx_current = leftx_base
+    rightx_current = rightx_base
+    # Set the width of the windows +/- margin
+    margin = 100
+    # Set minimum number of pixels found to recenter window
+    minpix = 50
+    # Create empty lists to receive left and right lane pixel indices
+    left_lane_inds = []
+    right_lane_inds = []
 
 
 def show_polyfit(image_file, visualize=False, save_example=False):
     # Read in an image
     image = mpimg.imread(image_file)
+
+    img_size = (image.shape[1], image.shape[0])
+    # Undistort image
+    dict = camera_calibration.load_calibration_data()
+    image = camera_calibration.undistort_image(image, dict)
+
+    # Perspective transform
+    image, M, Minv = transform.apply_transform(image)
+
     # Run the function
-    binary_warped = pipeline.pipeline(image)
-    poly_fit(binary_warped)
+    grad_binary_x = imaging.abs_sobel_thresh(image, orient='x', thresh=(40, 255))
+    grad_binary_y = imaging.abs_sobel_thresh(image, orient='y', thresh=(25, 255))
+
+    grad_binary = cv2.bitwise_and(grad_binary_x, grad_binary_y)
+
+    color_binary = imaging.color_threshold(image, hls_thresh=(150, 255), hsv_thresh=(200, 255))
+
+    processed_image = cv2.bitwise_or(grad_binary, color_binary)
+
+    processed_image = imaging.gaussian_blur(processed_image, kernel=9)
+
+    result = poly_fit(processed_image)
     # Plot the result
-    # f, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 7))
-    # ax1.imshow(image)
-    # ax1.set_title("Original Image", fontsize=24)
-    # ax2.imshow(pipeline_image, cmap="gray")
-    # ax2.set_title("Pipeline Result", fontsize=24)
-    # if visualize:
-    #     plt.show(block=True)
-    # if save_example:
-    #     save_file_name = "pipeline_{}".format(os.path.basename(image_file.replace(".jpg", ".png")))
-    #     save_location = "./output_images/{}".format(save_file_name)
-    #     f.savefig(save_location, bbox_inches="tight")
+    f, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 7))
+    ax1.imshow(image)
+    ax1.set_title("Original Image", fontsize=24)
+    ax2.imshow(result, cmap="gray")
+    ax2.set_title("Pipeline Result", fontsize=24)
+    if visualize:
+        plt.show(block=True)
+    if save_example:
+        save_file_name = "pipeline_{}".format(os.path.basename(image_file.replace(".jpg", ".png")))
+        save_location = "./output_images/{}".format(save_file_name)
+        f.savefig(save_location, bbox_inches="tight")
 
 
 if __name__ == '__main__':
