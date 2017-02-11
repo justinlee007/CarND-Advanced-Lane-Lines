@@ -1,7 +1,11 @@
 import argparse
+import glob
 import os
 
 import cv2
+import matplotlib
+
+matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -32,15 +36,16 @@ def create_warp_mappings(image):
     :return:
     """
     shape = image.shape
-    top_vertical_offset = 100
+    mid_vertical_offset = 100
     bottom_vertical_offset = 30
-    horizontal_offset = 110
+    mid_horizontal_offset = 110
+    bottom_horizontal_offset = 90
     mid_vertical = shape[0] / 2
     mid_horizontal = shape[1] / 2
-    bottom_left = [horizontal_offset, (shape[0] - bottom_vertical_offset)]
-    middle_left = [(mid_horizontal - horizontal_offset), (mid_vertical + top_vertical_offset)]
-    middle_right = [(mid_horizontal + horizontal_offset), (mid_vertical + top_vertical_offset)]
-    bottom_right = [(shape[1] - horizontal_offset), (shape[0] - bottom_vertical_offset)]
+    middle_left = [(mid_horizontal - mid_horizontal_offset), (mid_vertical + mid_vertical_offset)]
+    middle_right = [(mid_horizontal + mid_horizontal_offset), (mid_vertical + mid_vertical_offset)]
+    bottom_left = [bottom_horizontal_offset, (shape[0] - bottom_vertical_offset)]
+    bottom_right = [(shape[1] - bottom_horizontal_offset), (shape[0] - bottom_vertical_offset)]
     src = np.float32([middle_right, bottom_right, bottom_left, middle_left])
     dst = np.float32([[shape[1], 0], [shape[1], shape[0]], [0, shape[0]], [0, 0]])
     return src, dst
@@ -81,9 +86,9 @@ if __name__ == '__main__':
     results = parser.parse_args()
     visualize = bool(results.show)
     save_examples = bool(results.save)
-    show_warp("./test_images/test1.jpg", visualize, save_examples)
-    show_warp("./test_images/test2.jpg", visualize, save_examples)
-    show_warp("./test_images/test3.jpg", visualize, save_examples)
-    show_warp("./test_images/test4.jpg", visualize, save_examples)
-    show_warp("./test_images/test5.jpg", visualize, save_examples)
-    show_warp("./test_images/test6.jpg", visualize, save_examples)
+
+    # show_warp("./test_images/test6.jpg", visualize, save_examples)
+
+    images = glob.glob("./test_images/test*.jpg")
+    for file_name in images:
+        show_warp(file_name, visualize, save_examples)

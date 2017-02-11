@@ -345,7 +345,7 @@ def show_histogram(image_file, visualize=False, save_example=False):
 
     # Plot the result
     f, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 7))
-    ax1.imshow(image)
+    ax1.imshow(binary_warped)
     ax1.set_title("Original Image", fontsize=24)
     ax2.imshow(result, cmap="gray")
     ax2.set_title("Histogram Result", fontsize=24)
@@ -388,4 +388,4 @@ if __name__ == '__main__':
 
     images = glob.glob("./test_images/test*.jpg")
     for file_name in images:
-        show_draw_lines(file_name, visualize, save_examples)
+        show_histogram(file_name, visualize, save_examples)
