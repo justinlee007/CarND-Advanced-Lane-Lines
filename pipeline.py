@@ -9,7 +9,7 @@ import matplotlib.image as mpimg
 import matplotlib.pyplot as plt
 import numpy as np
 from moviepy.editor import VideoFileClip
-
+import glob
 import camera_calibration
 import imaging
 import transform
@@ -45,8 +45,10 @@ def pipeline(img):
 
     processed_image = imaging.gaussian_blur(processed_image, kernel=9)
 
-    poly_fit_result = poly_fit.poly_fit(processed_image)
-    inv_warp = cv2.warpPerspective(poly_fit_result, Minv, img_size, flags=cv2.INTER_LINEAR)
+    histogram_image, left_fit, right_fit = poly_fit.histogram(processed_image)
+    lane_lines, left_line_pts, right_line_pts = poly_fit.lane_lines(processed_image, left_fit, right_fit)
+
+    inv_warp = cv2.warpPerspective(lane_lines, Minv, img_size, flags=cv2.INTER_LINEAR)
     result = cv2.addWeighted(img, 1, inv_warp, 0.5, 0)
 
     # result = process_image(img, processed_image, Minv)
@@ -241,10 +243,9 @@ if __name__ == '__main__':
     results = parser.parse_args()
     visualize = bool(results.show)
     save_examples = bool(results.save)
-    show_pipeline("./test_images/test1.jpg", visualize, save_examples)
-    show_pipeline("./test_images/test2.jpg", visualize, save_examples)
-    show_pipeline("./test_images/test3.jpg", visualize, save_examples)
-    show_pipeline("./test_images/test4.jpg", visualize, save_examples)
-    show_pipeline("./test_images/test5.jpg", visualize, save_examples)
-    show_pipeline("./test_images/test6.jpg", visualize, save_examples)
+
     # process_video()
+    # show_pipeline("./test_images/test1.jpg", visualize, save_examples)
+    images = glob.glob("./test_images/test*.jpg")
+    for file_name in images:
+        show_pipeline(file_name, visualize, save_examples)

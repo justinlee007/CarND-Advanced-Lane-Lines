@@ -261,6 +261,7 @@ def lane_lines(binary_warped, left_fit, right_fit):
     left_fitx = left_fit[0] * ploty ** 2 + left_fit[1] * ploty + left_fit[2]
     right_fitx = right_fit[0] * ploty ** 2 + right_fit[1] * ploty + right_fit[2]
 
+    # Create an output image to draw on and visualize the result
     out_img = np.dstack((binary_warped, binary_warped, binary_warped)) * 255
     # Color in left and right line pixels
     out_img[nonzeroy[left_lane_inds], nonzerox[left_lane_inds]] = [255, 0, 0]
@@ -275,20 +276,10 @@ def lane_lines(binary_warped, left_fit, right_fit):
     right_line_window2 = np.array([np.flipud(np.transpose(np.vstack([right_fitx + margin, ploty])))])
     right_line_pts = np.hstack((right_line_window1, right_line_window2))
 
-    # Create an image to draw on and an image to show the selection window
-    window_img = np.zeros_like(out_img)
     # Draw the lane onto the warped blank image
-    cv2.fillPoly(window_img, np.int_([left_line_pts]), (255, 0, 0))
-    cv2.fillPoly(window_img, np.int_([right_line_pts]), (0, 0, 255))
-    result = cv2.addWeighted(out_img, 1, window_img, 0.5, 0)
-    # plt.imshow(result)
-    # plt.plot(left_fitx, ploty, color='red')
-    # plt.plot(right_fitx, ploty, color='blue')
-    # plt.xlim(0, 1280)
-    # plt.ylim(720, 0)
-
-    # plt.show(block=True)
-    return result, left_line_pts, right_line_pts
+    cv2.fillPoly(out_img, np.int_([left_line_pts]), (255, 0, 0))
+    cv2.fillPoly(out_img, np.int_([right_line_pts]), (0, 0, 255))
+    return out_img, left_line_pts, right_line_pts
 
 
 def get_binary_warped(image_file):
@@ -388,4 +379,4 @@ if __name__ == '__main__':
 
     images = glob.glob("./test_images/test*.jpg")
     for file_name in images:
-        show_histogram(file_name, visualize, save_examples)
+        show_draw_lines(file_name, visualize, save_examples)
