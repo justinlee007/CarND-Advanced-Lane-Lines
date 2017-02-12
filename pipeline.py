@@ -26,6 +26,7 @@ lanes = Lanes(debug_mode=False)
 # Edit this function to create your own pipeline.
 def pipeline(img):
     img_size = (img.shape[1], img.shape[0])
+
     # Undistort image
     dict = camera_calibration.load_calibration_data()
     img = camera_calibration.undistort_image(img, dict)
@@ -33,19 +34,11 @@ def pipeline(img):
     # Perspective transform
     image, M, Minv = transform.apply_transform(img)
 
-    # Run the function
-    grad_binary_x = imaging.abs_sobel_thresh(image, orient='x', thresh=(40, 255))
-    grad_binary_y = imaging.abs_sobel_thresh(image, orient='y', thresh=(25, 255))
-
-    grad_binary = cv2.bitwise_and(grad_binary_x, grad_binary_y)
-
-    color_binary = imaging.color_threshold(image, hls_thresh=(150, 255), hsv_thresh=(200, 255))
-
-    processed_image = cv2.bitwise_or(grad_binary, color_binary)
-
-    processed_image = imaging.gaussian_blur(processed_image, kernel=9)
+    # Sobel/color thresholding and gaussian blur
+    processed_image = imaging.process_imaging(image)
 
     histogram_image, left_fit, right_fit = poly_fit.histogram(processed_image)
+
     lane_lines, left_line_pts, right_line_pts = poly_fit.lane_lines(processed_image, left_fit, right_fit)
 
     inv_warp = cv2.warpPerspective(lane_lines, Minv, img_size, flags=cv2.INTER_LINEAR)
@@ -244,8 +237,8 @@ if __name__ == '__main__':
     visualize = bool(results.show)
     save_examples = bool(results.save)
 
-    # process_video()
+    process_video()
     # show_pipeline("./test_images/test1.jpg", visualize, save_examples)
-    images = glob.glob("./test_images/test*.jpg")
-    for file_name in images:
-        show_pipeline(file_name, visualize, save_examples)
+    # images = glob.glob("./test_images/test*.jpg")
+    # for file_name in images:
+    #     show_pipeline(file_name, visualize, save_examples)

@@ -3,6 +3,9 @@ import glob
 import os
 
 import cv2
+import matplotlib
+
+matplotlib.use('TkAgg')
 import matplotlib.image as mpimg
 import matplotlib.pyplot as plt
 import numpy as np
@@ -60,17 +63,12 @@ def gaussian_blur(img, kernel=5):
     return blur
 
 
-def show_imaging(image_file, visualize=False, save_example=False):
-    image = mpimg.imread(image_file)
-
-    # Undistort image
-    dict = camera_calibration.load_calibration_data()
-    image = camera_calibration.undistort_image(image, dict)
-
-    # Perspective transform
-    image, M, Minv = transform.apply_transform(image)
-
-    # Run the function
+def process_imaging(image):
+    """
+    Run the sobel and color threshold functions with bitwise mapping, then returns gaussian blur of result
+    :param image: binary warped image expected
+    :return:
+    """
     sobel_x = abs_sobel_thresh(image, orient='x', thresh=(35, 255))
     sobel_y = abs_sobel_thresh(image, orient='y', thresh=(15, 255))
 
@@ -81,6 +79,20 @@ def show_imaging(image_file, visualize=False, save_example=False):
     processed_image = cv2.bitwise_or(sobel_binary, color_binary)
 
     processed_image = gaussian_blur(processed_image, kernel=9)
+    return processed_image
+
+
+def show_imaging(image_file, visualize=False, save_example=False):
+    image = mpimg.imread(image_file)
+
+    # Undistort image
+    dict = camera_calibration.load_calibration_data()
+    image = camera_calibration.undistort_image(image, dict)
+
+    # Perspective transform
+    image, M, Minv = transform.apply_transform(image)
+
+    processed_image = process_imaging(image)
 
     # Plot the result
     f, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 7))
