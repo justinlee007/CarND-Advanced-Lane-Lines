@@ -59,7 +59,6 @@ class Lanes:
 
     def get_two_peak_x_coords(self, hist, prev_left_x=-1, prev_right_x=-1, start_y=0, end_y=0, found_last_left=False,
                               found_last_right=False, left_trend=0, right_trend=0):
-        num_pixels_x = len(hist)
         left_window = 40
         right_window = 40
         found_left = True
@@ -369,19 +368,12 @@ class Lanes:
         newwarp = cv2.warpPerspective(color_warp, Minv, (img.shape[1], img.shape[0]))
         # Combine the result with the original image
         result = cv2.addWeighted(img, 1, newwarp, 0.3, 0)
+        return result
 
-        # Write the radius of curvature for each lane
-        font = cv2.FONT_HERSHEY_SIMPLEX
-        left_roc = "Roc: {0:.2f}m".format(self.left_curverad)
-        cv2.putText(result, left_roc, (10, 650), font, 1, (255, 255, 255), 2)
-        right_roc = "Roc: {0:.2f}m".format(self.right_curverad)
-        cv2.putText(result, right_roc, (1020, 650), font, 1, (255, 255, 255), 2)
-
-        # Write the x coords for each lane
-        left_coord = "X  : {0:.2f}".format(self.left_x)
-        cv2.putText(result, left_coord, (10, 700), font, 1, (255, 255, 255), 2)
-        right_coord = "X  : {0:.2f}".format(self.last_right_x)
-        cv2.putText(result, right_coord, (1020, 700), font, 1, (255, 255, 255), 2)
+    def draw_text(self, img):
+        # Write the radius of curvature
+        text = "Radius of Curvature = {0: >6.0f}m".format(self.left_curverad)
+        cv2.putText(img, text, (50, 50), cv2.FONT_HERSHEY_DUPLEX, 1, (255, 255, 255), 2)
 
         # Write dist from center
         perfect_center = 1280 / 2.
@@ -389,7 +381,10 @@ class Lanes:
         center_x = (lane_x / 2.0) + self.left_x
         cms_per_pixel = 370.0 / lane_x  # US regulation lane width = 3.7m
         dist_from_center = (center_x - perfect_center) * cms_per_pixel
-        dist_text = "Dist from Center: {0:.2f} cms".format(dist_from_center)
-        cv2.putText(result, dist_text, (450, 50), font, 1, (255, 255, 255), 2)
 
-        return result
+        side_pos = "left"
+        if dist_from_center <= 0:
+            side_pos = "right"
+        text = "Vehicle is {0: >3.0f}cm {1} of center".format(abs(dist_from_center), side_pos)
+        cv2.putText(img, text, (50, 100), cv2.FONT_HERSHEY_DUPLEX, 1, (255, 255, 255), 2)
+        return img

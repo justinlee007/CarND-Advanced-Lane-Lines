@@ -17,7 +17,7 @@ import transform
 def histogram(binary_warped):
     # Assuming you have created a warped binary image called "binary_warped"
     # Take a histogram of the bottom half of the image
-    histogram = np.sum(binary_warped[int(binary_warped.shape[0] * 0.65):, :], axis=0)
+    histogram = np.sum(binary_warped[int(binary_warped.shape[0] * 0.7):, :], axis=0)
     # Create an output image to draw on and  visualize the result
     out_img = np.dstack((binary_warped, binary_warped, binary_warped)) * 255
     # Find the peak of the left and right halves of the histogram
@@ -67,8 +67,6 @@ def histogram(binary_warped):
             leftx_current = np.int(np.mean(nonzerox[good_left_inds]))
         if len(good_right_inds) > minpix:
             rightx_current = np.int(np.mean(nonzerox[good_right_inds]))
-            # print("len(good_left_inds)={}, len(good_right_inds)={}".format(len(good_left_inds), len(good_right_inds)))
-            # print("leftx_current={}, rightx_current={}".format(leftx_current, rightx_current))
 
     # Concatenate the arrays of indices
     left_lane_inds = np.concatenate(left_lane_inds)
@@ -129,9 +127,17 @@ def lane_lines(binary_warped, left_fit, right_fit):
     right_line_window2 = np.array([np.flipud(np.transpose(np.vstack([right_fitx + margin, ploty])))])
     right_line_pts = np.hstack((right_line_window1, right_line_window2))
 
-    # Draw the lane onto the warped blank image
+    # Draw the lane lines onto the warped blank image
     cv2.fillPoly(out_img, np.int_([left_line_pts]), (255, 0, 0))
     cv2.fillPoly(out_img, np.int_([right_line_pts]), (0, 0, 255))
+
+    # Recast the x and y points into usable format for cv2.fillPoly()
+    pts_left = np.array([np.transpose(np.vstack([left_fitx, ploty]))])
+    pts_right = np.array([np.flipud(np.transpose(np.vstack([right_fitx, ploty])))])
+    pts = np.hstack((pts_left, pts_right))
+
+    # Draw the lane onto the warped blank image
+    cv2.fillPoly(out_img, np.int_([pts]), (0, 255, 0))
     return out_img, left_line_pts, right_line_pts
 
 
