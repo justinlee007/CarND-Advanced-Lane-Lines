@@ -156,8 +156,18 @@ optional arguments:
 
 ###1) Does the pipeline established with the test images work to process the video?
 
+The pipeline works for the main project video.  However, the lane-finding fails for the challenge and extra-challenge video.
+
 [Output for project video](https://youtu.be/GpaeX5sCEPQ)
 
 ## Discussion
 
+My thinking on this project is similar to project 1.  It's a fascinating challenge that taught me quite a bit more about CV techniques.
 
+But I think the solution in general is heuristic and is not optimal for general lane-finding.  As seen in the challenge videos, changes in road conditions and colors present a problem and must have specific color filters.  Also, other lines are picked up by the pipeline that match all the processing but are not the lane lines.
+
+Similarly, during lane-change, lane-merging or any other situation where lanes are converging to normal pattern, the algorithm will fail.
+
+Finally, many roads don't have lane markings, or the markings are very faint or broken up so determining a path would fail as well.
+
+Ultimately, lane-finding might need to have a more nuanced solution, with heuristic camera techniques used for well-known roads.  Combined with geospatial, temporal and other variables might alter threshold values for filters automatically.  Conversely, if lane-finding can be a problem solved by deep learning, then CV techniques could be moot (or used in some fused manner).
