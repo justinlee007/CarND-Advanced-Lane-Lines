@@ -168,23 +168,11 @@ optional arguments:
 The main method of this script loads all the "test*.jpg" files in the `test_images` directory and processes each one.  It also runs the `process_video` method which reads the video file and processes it using the `pipeline` function.
 
 We use the previous measurements to continually update `curverad` which is used to calculate radius with the formula:
-```python
-# Get radius of curvature
-curverad = ((1 + (2 * fit_cr[0] * y_eval + fit_cr[1]) ** 2) ** 1.5) / np.absolute(2 * fit_cr[0])
-```
+![](curve.png)
 
 The distance from center makes two assumptions about the input video:
 1) The camera is located dead-center on the car
 2) The lane width follows US regulation (3.7m)
-```python
-# Write dist from center
-perfect_center = 1280 / 2.
-lane_x = self.last_right_x - self.left_x
-center_x = (lane_x / 2.0) + self.left_x
-cms_per_pixel = 370.0 / lane_x  # US regulation lane width = 3.7m
-dist_from_center = (center_x - perfect_center) * cms_per_pixel
-```
-
 
 ![](output_images/pipeline_test2.png)
 ##### Example pipeline image with radius of curvature and vehicle position
