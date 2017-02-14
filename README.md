@@ -130,10 +130,24 @@ optional arguments:
 
 The main method of this script loads all the "test*.jpg" files in the `test_images` directory and processes each one.
 
+The process includes two methods `histogram` and `lane_lines`.  
+
+The output of `histogram` are two arrays from `np.polyfit` that can be used to paint left and right lanes.  The output also includes an image of the histogram slices for examples.  
 The process includes:
 * Calling the `imaging.process_imaging(image)`
+* Creating a histogram of the bottom 70% of the image
+* Use a slicing technique to determine peak areas per slice
+* Create data points for each peak in the slice for the left and right lanes
+
 ![](output_images/histogram_test2.png)
 ##### Example histogram slicing from warped undistorted image
+
+The output of `lane_lines` is the left and right lane plot points, concatenated with `np.hstack`
+The process includes:
+* Extracting left and right line pixel positions
+* Fit a second order polynomial to each
+* Generating x and y values for plotting
+* Red left lane, blue right lane and green polygon to illustrate the search window area
 
 ![](output_images/lane_lines_test2.png)
 ##### Example lane line painting from warped undistored image
