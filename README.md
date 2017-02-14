@@ -141,6 +141,8 @@ optional arguments:
 
 ###1) Does the pipeline established with the test images work to process the video?
 
+![](https://youtu.be/GpaeX5sCEPQ)
+
 ## Discussion
 
 
