@@ -18,8 +18,16 @@ import poly_fit
 lanes = Lanes(debug_mode=False)
 
 
-# Edit this function to create your own pipeline.
 def pipeline(img):
+    """
+    Complete pipeline for lane finding.
+    The image passed in is first undistorted.  Then the image is transformed or warped.
+    Next the image passes through sobel and color filtering.  After that, a histogram finds the left and right lane.
+    Next, the lanes are painted and the image warping is reversed.
+    Finally, text is overlayed to display radius of curvature and distance from center.
+    :param img:
+    :return:
+    """
     # Undistort image
     dict = camera_calibration.load_calibration_data()
     img = camera_calibration.undistort_image(img, dict)
@@ -34,10 +42,15 @@ def pipeline(img):
     lanes.fit_lanes()
     # result = lanes.draw_lanes(img, processed_image, Minv)
 
+    # Find lanes
     histogram_image, left_fit, right_fit = poly_fit.histogram(processed_image)
     lane_lines, left_line_pts, right_line_pts = poly_fit.lane_lines(processed_image, left_fit, right_fit)
+
+    # Undo perspective transform
     inv_warp = cv2.warpPerspective(lane_lines, Minv, (img.shape[1], img.shape[0]), flags=cv2.INTER_LINEAR)
     result = cv2.addWeighted(img, 1, inv_warp, 0.4, 0)
+
+    # Overlay radius of curvature and distance from center
     result = lanes.draw_text(result)
 
     return result

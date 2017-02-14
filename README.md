@@ -128,6 +128,10 @@ optional arguments:
   -save       Save histogram and lane line image
 ```
 
+The main method of this script loads all the "test*.jpg" files in the `test_images` directory and processes each one.
+
+The process includes:
+* Calling the `imaging.process_imaging(image)`
 ![](output_images/histogram_test2.png)
 ##### Example histogram slicing from warped undistorted image
 
@@ -135,6 +139,17 @@ optional arguments:
 ##### Example lane line painting from warped undistored image
 ###5) Having identified the lane lines, has the radius of curvature of the road been estimated and the position of the vehicle with respect to center in the lane?
 
+The code for this step is contained in `pipeline.py`
+```
+usage: pipeline.py [-h] [-show] [-save]
+
+Complete image pipeline for Udacity Advanced Lane Finding project
+
+optional arguments:
+  -h, --help  show this help message and exit
+  -show       Visualize pipeline image
+  -save       Save pipeline image
+```
 ![](output_images/pipeline_test2.png)
 ##### Example pipeline image with radius of curvature and vehicle position
 ## Pipeline (video)
