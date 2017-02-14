@@ -18,10 +18,10 @@ The images for camera calibration are in the `camera_cal` folder.  The images in
 
 ## [Rubric Points](https://review.udacity.com/#!/rubrics/571/view)
 
-**Camera Calibration**
+### Camera Calibration
 1) Have the camera matrix and distortion coefficients been computed correctly and checked on one of the calibration images as a test?
 
-The code for this step is contained in the file called `camera_calibration.py`
+The code for this step is contained in `camera_calibration.py`
 ```
 usage: camera_calibration.py [-h] [-show] [-save]
 
@@ -39,9 +39,68 @@ For each set of corners, the output is displayed and shown to the user (if speci
 Finally the corner points are sent to `cv2.calibrateCamera` to get resulting image points and object points.  This dictionary is then saved for reuse in undistorting other images in the pipeline.
 
 ![](output_images/chessboard1.jpg) ![](output_images/chessboard9.jpg)
-<table>
-<tr>
-<td><a href="https://github.com/justinlee007/CarND-Advanced-Lane-Lines/blob/master/output_images/chessboard1.jpg"></td>
-<td>![](output_images/chessboard9.jpg)</td>
-</td>
-</table>
+
+##### Example chessboard images with corners drawn
+
+### Pipeline
+This sections includes all scripts and functionality to process images throughout the lane-finding pipeline.
+
+####1) Has the distortion correction been correctly applied to each image?
+
+The `camera_calibration.py` script also contains a utility method for undistorting images based on the saved camera calibration dictionary.  This utility calls `cv2.undistort` internally.  The dictionary is loaded with the `load_calibration_data` method.
+
+![](output_images/undistorted_calibration2.png)
+
+![](output_images/undistorted_signs_vehicles_xygrad.png)
+
+##### Example undistorted images next to the original image
+
+####2) Has a perspective transform been applied to rectify the image?
+Since perspective transform occurs after distortion correction, the discussion here follows that flow.
+
+The code for this step is contained in `transform.py`
+```
+usage: transform.py [-h] [-show] [-save]
+
+Perspective transform for Udacity Advanced Lane Finding project
+
+optional arguments:
+  -h, --help  show this help message and exit
+  -show       Visualize transform
+  -save       Save transform image
+```
+The main method of this script loads all the "test*.jpg" files in the `test_images` directory and processes each one.
+
+The process includes:
+* Undistort the image
+* Create mappings (a helper method to define four points in a polygon for perspective transform)
+* Apply the transform using `cv2.getPerspectiveTransform` and `cv2.warpPerspective` (the inverse perspective is also calculated)
+* Show the transform and/or save the image to disk (if specified)
+
+![](output_images/warped_test2.png)
+##### Example perspective transform with mappings drawn for reference
+
+####3) Has a binary image been created using color transforms, gradients or other methods?
+
+The code for this step is contained in `imaging.py`
+```
+usage: imaging.py [-h] [-show] [-save]
+
+Imaging methods for Udacity Advanced Lane Finding project
+
+optional arguments:
+  -h, --help  show this help message and exit
+  -show       Visualize imaging process
+  -save       Save processed image
+```
+
+The main method of this script will load all the files in `test_images` directory containing "test*.jpg" and process each one.
+
+The process involves:
+* Undistorting the image
+* Apply two Sobel filters in the x and y directions
+    * The x direction sobel filter uses a threshold of 35 and 255
+    * The y direction sobel filter uses a threshold of 15 and 255
+* Do a bitwise AND function for the two sobel filters
+* Apply a color mask
+    * 
