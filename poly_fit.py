@@ -153,7 +153,7 @@ def get_binary_warped(image_file):
     img, M, Minv = transform.apply_transform(image)
 
     processed_image = imaging.process_imaging(img)
-    return image, processed_image
+    return img, processed_image
 
 
 def show_draw_lines(image_file, visualize=False, save_example=False):
@@ -162,7 +162,7 @@ def show_draw_lines(image_file, visualize=False, save_example=False):
     result, left_lane_pts, right_lane_pts = lane_lines(binary_warped, left_fit, right_fit)
     # Plot the result
     f, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 7))
-    ax1.imshow(binary_warped)
+    ax1.imshow(image)
     ax1.set_title("Original Image", fontsize=24)
     ax2.imshow(result, cmap="gray")
     ax2.set_title("Lane Lines Result", fontsize=24)
@@ -185,7 +185,7 @@ def show_histogram(image_file, visualize=False, save_example=False):
 
     # Plot the result
     f, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 7))
-    ax1.imshow(binary_warped)
+    ax1.imshow(image)
     ax1.set_title("Original Image", fontsize=24)
     ax2.imshow(result, cmap="gray")
     ax2.set_title("Histogram Result", fontsize=24)

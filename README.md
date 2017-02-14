@@ -120,17 +120,23 @@ The code for this step is contained in `poly_fit.py`
 ```
 usage: poly_fit.py [-h] [-show] [-save]
 
-Polyfit for Udacity Advanced Lane Finding project
+Histogram and lane line fitting for Udacity Advanced Lane Finding project
 
 optional arguments:
   -h, --help  show this help message and exit
-  -show       Visualize polyfit image
-  -save       Save polyfit image
+  -show       Visualize histogram and lane line images
+  -save       Save histogram and lane line image
 ```
 
-###5) Having identified the lane lines, has the radius of curvature of the road been estimated?
-And the position of the vehicle with respect to center in the lane?
+![](output_images/histogram_test2.png)
+##### Example histogram slicing from warped undistorted image
 
+![](output_images/lane_lines_test2.png)
+##### Example lane line painting from warped undistored image
+###5) Having identified the lane lines, has the radius of curvature of the road been estimated and the position of the vehicle with respect to center in the lane?
+
+![](output_images/pipeline_test2.png)
+##### Example pipeline image with radius of curvature and vehicle position
 ## Pipeline (video)
 
 ###1) Does the pipeline established with the test images work to process the video?
