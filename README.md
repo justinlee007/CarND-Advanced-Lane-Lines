@@ -1,4 +1,4 @@
-## Advanced Lane Finding Project
+# Advanced Lane Finding Project
 [![Udacity - Self-Driving Car NanoDegree](https://s3.amazonaws.com/udacity-sdc/github/shield-carnd.svg)](http://www.udacity.com/drive)
 
 This project utilizes a software pipeline to identify the lane boundaries in a video.
@@ -16,9 +16,9 @@ The goals / steps of this project are the following:
 
 The images for camera calibration are in the `camera_cal` folder.  The images in `test_images` are used in testing the pipeline on single frames.  Examples of the output from each stage of the pipeline are the `ouput_images` folder.  The video `project_video.mp4` is target video for the lane-finding pipeline.  Each rubric step will be documented with output images and usage.
 
-## [Rubric Points](https://review.udacity.com/#!/rubrics/571/view)
+# [Rubric Points](https://review.udacity.com/#!/rubrics/571/view)
 
-### Camera Calibration
+## Camera Calibration
 1) Have the camera matrix and distortion coefficients been computed correctly and checked on one of the calibration images as a test?
 
 The code for this step is contained in `camera_calibration.py`
@@ -42,10 +42,10 @@ Finally the corner points are sent to `cv2.calibrateCamera` to get resulting ima
 
 ##### Example chessboard images with corners drawn
 
-### Pipeline
+## Pipeline
 This sections includes all scripts and functionality to process images throughout the lane-finding pipeline.
 
-####1) Has the distortion correction been correctly applied to each image?
+###1) Has the distortion correction been correctly applied to each image?
 
 The `camera_calibration.py` script also contains a utility method for undistorting images based on the saved camera calibration dictionary.  This utility calls `cv2.undistort` internally.  The dictionary is loaded with the `load_calibration_data` method.
 
@@ -55,7 +55,7 @@ The `camera_calibration.py` script also contains a utility method for undistorti
 
 ##### Example undistorted images next to the original image
 
-####2) Has a perspective transform been applied to rectify the image?
+###2) Has a perspective transform been applied to rectify the image?
 Since perspective transform occurs after distortion correction, the discussion here follows that flow.
 
 The code for this step is contained in `transform.py`
@@ -80,7 +80,7 @@ The process includes:
 ![](output_images/warped_test2.png)
 ##### Example perspective transform with mappings drawn for reference
 
-####3) Has a binary image been created using color transforms, gradients or other methods?
+###3) Has a binary image been created using color transforms, gradients or other methods?
 
 The code for this step is contained in `imaging.py`
 ```
