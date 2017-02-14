@@ -200,9 +200,10 @@ def show_histogram(image_file, visualize=False, save_example=False):
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description="Polyfit for Udacity Advanced Lane Finding project")
-    parser.add_argument("-show", action="store_true", help="Visualize polyfit image")
-    parser.add_argument("-save", action="store_true", help="Save polyfit image")
+    parser = argparse.ArgumentParser(
+        description="Histogram and lane line fitting for Udacity Advanced Lane Finding project")
+    parser.add_argument("-show", action="store_true", help="Visualize histogram and lane line images")
+    parser.add_argument("-save", action="store_true", help="Save histogram and lane line image")
     results = parser.parse_args()
     visualize = bool(results.show)
     save_examples = bool(results.save)

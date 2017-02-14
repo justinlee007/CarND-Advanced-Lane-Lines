@@ -94,13 +94,47 @@ optional arguments:
   -save       Save processed image
 ```
 
-The main method of this script will load all the files in `test_images` directory containing "test*.jpg" and process each one.
+This script expects undistorted images with the perspective transform already applied. 
 
-The process involves:
-* Undistorting the image
+The main method of this script loads all the "test*.jpg" files in the `test_images` directory and processes each one.
+
+The process includes:
 * Apply two Sobel filters in the x and y directions
     * The x direction sobel filter uses a threshold of 35 and 255
     * The y direction sobel filter uses a threshold of 15 and 255
 * Do a bitwise AND function for the two sobel filters
-* Apply a color mask
-    * 
+* Apply two color masks in HLS and HSV color space
+    * The HLS mask uses a threshold of 150 and 255
+    * The HSV mask uses a threshold of 200 and 255
+* Do a bitwise AND function for the two color filters
+* Do a bitwise OR funtion on the combined sobel filters and combined color masks
+* Finally apply a gaussian blur on the outputted image with a kernel of 9
+* Show the processed image and/or save to disk (if specified)
+
+![](output_images/imaging_test2.png)
+##### Example binary image with combined sobel filters, color masks and gaussian blur
+
+###4) Have lane line pixels been identified in the rectified image and fit with a polynomial?
+
+The code for this step is contained in `poly_fit.py`
+```
+usage: poly_fit.py [-h] [-show] [-save]
+
+Polyfit for Udacity Advanced Lane Finding project
+
+optional arguments:
+  -h, --help  show this help message and exit
+  -show       Visualize polyfit image
+  -save       Save polyfit image
+```
+
+###5) Having identified the lane lines, has the radius of curvature of the road been estimated?
+And the position of the vehicle with respect to center in the lane?
+
+## Pipeline (video)
+
+###1) Does the pipeline established with the test images work to process the video?
+
+## Discussion
+
+
