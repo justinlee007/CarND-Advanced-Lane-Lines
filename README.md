@@ -171,8 +171,9 @@ We use the previous measurements to continually update `curverad` which is used 
 ![](curve.png)
 
 The distance from center makes two assumptions about the input video:
+
 1) The camera is located dead-center on the car
-2) The lane width follows US regulation (3.7m)
+1) The lane width follows US regulation (3.7m)
 
 ![](output_images/pipeline_test2.png)
 ##### Example pipeline image with radius of curvature and vehicle position
